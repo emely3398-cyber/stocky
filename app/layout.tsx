@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'InventarioPro | Control de inventario',
+  title: 'Stockly | Control de inventario',
   description: 'Administra productos, existencias y alertas de inventario desde un dashboard intuitivo.',
   generator: 'v0.app',
   icons: {
