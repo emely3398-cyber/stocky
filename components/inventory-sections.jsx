@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowDownRight, ArrowUpRight, Bell, Building2, Boxes, Download, Package, ShieldCheck, SlidersHorizontal, Tag, TriangleAlert } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, Bell, Building2, Boxes, Download, Package, Plus, ShieldCheck, SlidersHorizontal, Tag, TriangleAlert } from 'lucide-react'
 
 const formatCurrency = value => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'USD' }).format(value)
 
@@ -40,7 +40,17 @@ export function SettingsSection({ settings, onSettingsChange, onSave }) {
   </div>
 }
 
-export function CategoriesSection({ categories, products, onOpenCategory }) {
+export function CategoriesSection({ categories, products, onOpenCategory, onCreateCategory }) {
+  const [categoryName, setCategoryName] = useState('')
+  const [categoryError, setCategoryError] = useState('')
+  const [creatingCategory, setCreatingCategory] = useState(false)
+  const submitCategory = event => {
+    event.preventDefault()
+    const name = categoryName.trim()
+    if (!name) return setCategoryError('Escribe un nombre para la categoría.')
+    if (categories.some(category => category.toLowerCase() === name.toLowerCase())) return setCategoryError('Ya existe una categoría con ese nombre.')
+    if (onCreateCategory(name)) { setCategoryName(''); setCategoryError(''); setCreatingCategory(false) }
+  }
   const summaries = categories.map((name, index) => {
     const items = products.filter(product => product.category === name)
     return { name, items, count: items.length, units: items.reduce((sum, product) => sum + product.stock, 0), value: items.reduce((sum, product) => sum + product.price * product.stock, 0), attention: items.filter(product => product.stock <= product.min).length, tone: ['cyan', 'purple', 'pink', 'blue'][index % 4] }
@@ -54,7 +64,8 @@ export function CategoriesSection({ categories, products, onOpenCategory }) {
       <article className="panel overview-stat"><span className="overview-stat-icon purple"><Boxes size={17}/></span><span>Unidades en inventario</span><strong>{products.reduce((sum, product) => sum + product.stock, 0)}</strong><small>Valor al precio de venta: {formatCurrency(totalValue)}</small></article>
     </section>
     <section className="panel section-panel">
-      <div className="panel-heading"><div><h2>Organización del catálogo</h2><p>Explora la composición y el estado de cada categoría.</p></div><span className="section-heading-mark"><Tag size={19}/></span></div>
+      <div className="panel-heading"><div><h2>Organización del catálogo</h2><p>Explora la composición y el estado de cada categoría.</p></div><button className="button-primary" type="button" onClick={() => { setCreatingCategory(value => !value); setCategoryError('') }}><Plus size={16}/> Nueva categoría</button></div>
+      {creatingCategory && <form className="category-create-form" onSubmit={submitCategory}><label htmlFor="new-category-name">Nombre de la categoría</label><div><input id="new-category-name" autoFocus maxLength={40} value={categoryName} onChange={event => { setCategoryName(event.target.value); setCategoryError('') }} placeholder="Ej. Papelería" aria-describedby={categoryError ? 'category-create-error' : undefined} aria-invalid={Boolean(categoryError)} /><button className="button-primary" type="submit">Crear categoría</button><button className="button-quiet" type="button" onClick={() => { setCreatingCategory(false); setCategoryName(''); setCategoryError('') }}>Cancelar</button></div>{categoryError && <small id="category-create-error" role="alert">{categoryError}</small>}</form>}
       <div className="category-cards-grid">{summaries.map(category => <article className={`category-card tone-${category.tone}`} key={category.name}>
         <div className="category-card-top"><span className="category-symbol"><Tag size={17}/></span><span className="category-product-count">{category.count} {category.count === 1 ? 'producto' : 'productos'}</span></div>
         <h3>{category.name}</h3>
