@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { ArrowDownRight, ArrowUpRight, Bell, Building2, Boxes, Download, Package, Plus, ShieldCheck, SlidersHorizontal, Tag, TriangleAlert } from 'lucide-react'
 
-const formatCurrency = value => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'USD' }).format(value)
+const formatCurrency = value => new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(value)
 
 export function SettingsSection({ settings, onSettingsChange, onSave }) {
   const update = (key, value) => onSettingsChange(current => ({ ...current, [key]: value }))
@@ -88,7 +88,7 @@ export function ReportsSection({ products, categories, currency, showOutOfStock,
   const outOfStock = products.filter(product => product.stock === 0)
   const attentionCount = lowStock.length + (showOutOfStock ? outOfStock.length : 0)
   const healthy = products.filter(product => product.stock > product.min)
-  const reportCurrency = new Intl.NumberFormat('es-MX', { style: 'currency', currency })
+  const reportCurrency = new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' })
   const maxUnits = Math.max(...summaries.map(category => category.units), 1)
 
   return <div className="section-stack">

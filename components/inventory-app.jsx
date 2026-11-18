@@ -17,7 +17,7 @@ const initialProducts = [
 ]
 const navItems = [ ['Dashboard', LayoutDashboard], ['Productos', Package], ['Categorías', Tag], ['Inventario', Boxes], ['Reportes', ChartNoAxesColumn], ['Configuración', Settings] ]
 const initialCategories = ['Periféricos', 'Monitores', 'Audio', 'Accesorios']
-const money = (value) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'USD' }).format(Number(value) || 0)
+const money = (value) => new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(Number(value) || 0)
 const statusFor = (product) => product.stock === 0 ? 'Agotado' : product.stock <= product.min ? 'Stock bajo' : 'En stock'
 
 function Status({ product }) { const status = statusFor(product); return <span className={`status status-${status === 'En stock' ? 'ok' : status === 'Agotado' ? 'empty' : 'low'}`}><i />{status}</span> }
@@ -65,7 +65,7 @@ export default function InventoryApp() {
     setMovements(current => [{ id: `${Date.now()}-${Math.random()}`, productId: product.id, productName: currentProduct.name, sku: currentProduct.sku, type, quantity, date, reason: reason || (type === 'in' ? 'Entrada' : 'Otro motivo'), supplier, reference, responsible, notes, previousStock, resultingStock, source: 'manual' }, ...current])
     notify(type === 'in' ? 'Entrada registrada y stock actualizado' : 'Salida registrada y stock actualizado')
   }
-  function exportReport() { const rows = [['Categoría', 'Productos', 'Unidades', 'Valor del inventario (USD)'], ...categories.map(name => { const items = products.filter(product => product.category === name); return [name, items.length, items.reduce((sum, product) => sum + product.stock, 0), items.reduce((sum, product) => sum + product.price * product.stock, 0).toFixed(2)] })]; const csv = rows.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(',')).join('\n'); const url = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' })); const link = document.createElement('a'); link.href = url; link.download = 'stockly-reporte-inventario.csv'; link.click(); URL.revokeObjectURL(url); notify('Reporte descargado') }
+  function exportReport() { const rows = [['Categoría', 'Productos', 'Unidades', 'Valor del inventario (GTQ)'], ...categories.map(name => { const items = products.filter(product => product.category === name); return [name, items.length, items.reduce((sum, product) => sum + product.stock, 0), items.reduce((sum, product) => sum + product.price * product.stock, 0).toFixed(2)] })]; const csv = rows.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(',')).join('\n'); const url = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' })); const link = document.createElement('a'); link.href = url; link.download = 'stockly-reporte-inventario.csv'; link.click(); URL.revokeObjectURL(url); notify('Reporte descargado') }
   const categoryColors = ['var(--cyan)', 'var(--purple)', 'var(--pink)', 'var(--blue)']
   const counts = categories.map((name, index) => ({ name, count: products.filter(p => p.category === name).length, color: categoryColors[index % categoryColors.length] }))
   const onProducts = active === 'Productos'
